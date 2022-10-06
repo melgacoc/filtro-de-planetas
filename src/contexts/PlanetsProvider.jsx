@@ -5,17 +5,27 @@ import fetchPlanetsApi from '../helpers/planetsApi';
 
 function PlanetsProvider({ children }) {
   const [data, setData] = useState([]);
+  const [nameFilter, setNameFilter] = useState('');
+  const [filter, setFilter] = useState([]);
 
   useEffect(() => {
     const request = async () => {
       const response = await fetchPlanetsApi();
-      console.log(response);
       setData(response);
     };
     request();
-  });
+  }, []);
 
-  const contextValue = { data };
+  const filterByName = (target) => {
+    setNameFilter(target.value);
+  };
+
+  useEffect(() => {
+    const dataByName = data.filter((e) => e.name.includes(nameFilter));
+    setFilter(dataByName);
+  }, [nameFilter, data]);
+
+  const contextValue = { data, filterByName, nameFilter, filter };
 
   return (
     <PlanetsContext.Provider value={ contextValue }>
