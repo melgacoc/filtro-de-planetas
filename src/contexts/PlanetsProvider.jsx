@@ -7,6 +7,11 @@ function PlanetsProvider({ children }) {
   const [data, setData] = useState([]);
   const [nameFilter, setNameFilter] = useState('');
   const [filter, setFilter] = useState([]);
+  const [numberFilter, setNumberFilter] = useState({
+    column: 'population',
+    comparison: 'maior que',
+    value: 0,
+  });
 
   useEffect(() => {
     const request = async () => {
@@ -15,6 +20,10 @@ function PlanetsProvider({ children }) {
     };
     request();
   }, []);
+
+  const filterByNumber = (target) => {
+    setNumberFilter(target.value);
+  };
 
   const filterByName = (target) => {
     setNameFilter(target.value);
@@ -25,7 +34,12 @@ function PlanetsProvider({ children }) {
     setFilter(dataByName);
   }, [nameFilter, data]);
 
-  const contextValue = { data, filterByName, nameFilter, filter };
+  const contextValue = { data,
+    filterByName,
+    nameFilter,
+    filter,
+    numberFilter,
+    filterByNumber };
 
   return (
     <PlanetsContext.Provider value={ contextValue }>
