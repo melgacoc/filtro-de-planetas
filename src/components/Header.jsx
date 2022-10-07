@@ -3,8 +3,9 @@ import PlanetsContext from '../contexts/PlanetsContext';
 
 function Header() {
   const { filterByName,
-    filterByNumber,
-    numberFilter } = useContext(PlanetsContext);
+    numberFilter,
+    filterByNumbers,
+    params } = useContext(PlanetsContext);
 
   return (
     <div>
@@ -17,35 +18,38 @@ function Header() {
       />
       <section>
         <select
+          name="column"
           data-testid="column-filter"
-          onChange={ ({ target }) => filterByNumber(target) }
+          onChange={ ({ target }) => params(target) }
           value={ numberFilter.column }
         >
-          <option value="population">População</option>
-          <option value="orbital_period">Período orbital</option>
-          <option value="diameter">Diâmetro</option>
-          <option value="rotation_period">Período de rotação</option>
-          <option value="surface_water">Superfície de água</option>
+          <option value="population">population</option>
+          <option value="orbital_period">orbital_period</option>
+          <option value="diameter">diameter</option>
+          <option value="rotation_period">rotation_period</option>
+          <option value="surface_water">surface_water</option>
         </select>
         <select
+          name="comparison"
           data-testid="comparison-filter"
-          onChange={ ({ target }) => filterByNumber(target) }
+          onChange={ ({ target }) => params(target) }
           value={ numberFilter.comparison }
         >
-          <option value="maior que">Maior que</option>
-          <option value="menor que">Menor que</option>
-          <option value="igual a">Igual a</option>
+          <option value="maior que">maior que</option>
+          <option value="menor que">menor que</option>
+          <option value="igual a">igual a</option>
         </select>
         <input
           name="value"
           type="number"
           data-testid="value-filter"
-          onChange={ ({ target }) => filterByNumber(target) }
+          onChange={ ({ target }) => params(target) }
           value={ numberFilter.value }
         />
         <button
           type="button"
           data-testid="button-filter"
+          onClick={ (event) => filterByNumbers(event) }
         >
           Filtrar
         </button>

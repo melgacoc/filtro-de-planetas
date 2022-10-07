@@ -74,7 +74,6 @@ function Table() {
             );
           })
         )}
-        ;
       </tbody>
     </table>
   );

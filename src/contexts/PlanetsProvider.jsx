@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import PlanetsContext from './PlanetsContext';
 import fetchPlanetsApi from '../helpers/planetsApi';
@@ -13,6 +13,8 @@ function PlanetsProvider({ children }) {
     value: 0,
   });
 
+  console.log(numberFilter);
+
   useEffect(() => {
     const request = async () => {
       const response = await fetchPlanetsApi();
@@ -21,25 +23,48 @@ function PlanetsProvider({ children }) {
     request();
   }, []);
 
-  const filterByNumber = (target) => {
-    setNumberFilter(target.value);
-  };
-
   const filterByName = (target) => {
     setNameFilter(target.value);
   };
-
-  useEffect(() => {
+  const filterByNameParam = useCallback(() => {
     const dataByName = data.filter((e) => e.name.includes(nameFilter));
     setFilter(dataByName);
   }, [nameFilter, data]);
+
+  useEffect(() => {
+    filterByNameParam();
+  }, [filterByNameParam]);
+
+  const params = (target) => {
+    setNumberFilter((prevNumberFilter) => ({ ...prevNumberFilter,
+      [target.name]: target.value }));
+  };
+
+  const filterByNumbers = useCallback(() => {
+    const dataByNumber = data.filter((e) => {
+      const number = Number(e[numberFilter.column]);
+      const value = Number(numberFilter.value);
+      switch (numberFilter.comparison) {
+      case 'maior que':
+        return number > value;
+      case 'menor que':
+        return number < value;
+      case 'igual a':
+        return number === value;
+      default:
+        return false;
+      }
+    });
+    setFilter(dataByNumber);
+  }, [data, numberFilter]);
 
   const contextValue = { data,
     filterByName,
     nameFilter,
     filter,
     numberFilter,
-    filterByNumber };
+    filterByNumbers,
+    params };
 
   return (
     <PlanetsContext.Provider value={ contextValue }>
