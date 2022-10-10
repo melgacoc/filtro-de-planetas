@@ -16,7 +16,7 @@ function PlanetsProvider({ children }) {
   const [columnParam, setColumnParam] = useState(['orbital_period', 'population',
     'diameter', 'rotation_period', 'surface_water']);
 
-  console.log(filter);
+  console.log(moreFilters);
 
   useEffect(() => {
     const request = async () => {
@@ -68,6 +68,19 @@ function PlanetsProvider({ children }) {
     }
   }, [moreFilters, data, nameFilter]);
 
+  const removeFilter = (column) => {
+    const attMoreFilters = moreFilters.filter((e) => e.column !== column);
+    setMoreFilters(attMoreFilters);
+    const attColumnParam = [...columnParam, column];
+    setColumnParam(attColumnParam);
+  };
+
+  const removeAllFilters = () => {
+    setMoreFilters([]);
+    setColumnParam(['orbital_period', 'population',
+      'diameter', 'rotation_period', 'surface_water']);
+  };
+
   const contextValue = { data,
     filterByName,
     nameFilter,
@@ -75,7 +88,10 @@ function PlanetsProvider({ children }) {
     numberFilter,
     params,
     setFilterValue,
-    columnParam };
+    columnParam,
+    moreFilters,
+    removeAllFilters,
+    removeFilter };
 
   return (
     <PlanetsContext.Provider value={ contextValue }>

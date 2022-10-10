@@ -6,11 +6,45 @@ function Header() {
     numberFilter,
     setFilterValue,
     params,
-    columnParam } = useContext(PlanetsContext);
+    columnParam,
+    moreFilters,
+    removeAllFilters,
+    removeFilter } = useContext(PlanetsContext);
 
   const renderColumns = () => columnParam.map((e) => (
-    <option key={ e } value={ e }>{ e }</option>
+    <option
+      key={ e }
+      value={ e }
+    >
+      { e }
+    </option>
   ));
+
+  const renderSelectedFilters = () => moreFilters.map((e) => {
+    const { column, comparison, value } = e;
+    return (
+      <div
+        data-testid="filter"
+        key={ e.index }
+      >
+        <span>
+          { column }
+          {' '}
+        </span>
+        <span>
+          { comparison }
+          {' '}
+        </span>
+        <span>{ value }</span>
+        <button
+          type="button"
+          onClick={ () => removeFilter(column) }
+        >
+          X
+        </button>
+      </div>
+    );
+  });
 
   return (
     <div>
@@ -54,6 +88,16 @@ function Header() {
         >
           Filtrar
         </button>
+        <button
+          type="button"
+          data-testid="button-remove-filters"
+          onClick={ () => removeAllFilters() }
+        >
+          Limpar filtros
+        </button>
+      </section>
+      <section>
+        { renderSelectedFilters() }
       </section>
     </div>
   );
