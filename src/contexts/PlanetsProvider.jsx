@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import PlanetsContext from './PlanetsContext';
 import fetchPlanetsApi from '../helpers/planetsApi';
@@ -12,8 +12,9 @@ function PlanetsProvider({ children }) {
     comparison: 'maior que',
     value: 0,
   });
+  const [moreFilters, setMoreFilters] = useState([]);
 
-  console.log(numberFilter);
+  console.log(filter);
 
   useEffect(() => {
     const request = async () => {
@@ -26,45 +27,50 @@ function PlanetsProvider({ children }) {
   const filterByName = (target) => {
     setNameFilter(target.value);
   };
-  const filterByNameParam = useCallback(() => {
+
+  useEffect(() => {
     const dataByName = data.filter((e) => e.name.includes(nameFilter));
     setFilter(dataByName);
   }, [nameFilter, data]);
-
-  useEffect(() => {
-    filterByNameParam();
-  }, [filterByNameParam]);
 
   const params = (target) => {
     setNumberFilter((prevNumberFilter) => ({ ...prevNumberFilter,
       [target.name]: target.value }));
   };
 
-  const filterByNumbers = useCallback(() => {
-    const dataByNumber = data.filter((e) => {
-      const number = Number(e[numberFilter.column]);
-      const value = Number(numberFilter.value);
-      switch (numberFilter.comparison) {
-      case 'maior que':
-        return number > value;
-      case 'menor que':
-        return number < value;
-      case 'igual a':
-        return number === value;
-      default:
-        return false;
-      }
-    });
-    setFilter(dataByNumber);
-  }, [data, numberFilter]);
+  const setFilterValue = () => {
+    setMoreFilters((prevMoreFilters) => [...prevMoreFilters, numberFilter]);
+  };
+
+  useEffect(() => {
+    // adaptei um trecho de código
+    const comp = {
+      'maior que': (x, y) => Number(x) > Number(y),
+      'menor que': (x, y) => Number(x) < Number(y),
+      'igual a': (x, y) => Number(x) === Number(y),
+    };
+    const dataByName = data.filter((e) => e.name.includes(nameFilter));
+    let filtered = dataByName;
+    if (moreFilters.length > 0) {
+      moreFilters.forEach((e) => {
+        const { column, comparison, value } = e;
+        const filteredValue = filtered
+          .filter((f) => comp[comparison](f[column], value));
+        filtered = [...filteredValue];
+      });
+      setFilter([...filtered]);
+    } else {
+      setFilter(filtered);
+    }
+  }, [moreFilters, data, nameFilter]);
 
   const contextValue = { data,
     filterByName,
     nameFilter,
     filter,
     numberFilter,
-    filterByNumbers,
-    params };
+    params,
+    setFilterValue };
 
   return (
     <PlanetsContext.Provider value={ contextValue }>
