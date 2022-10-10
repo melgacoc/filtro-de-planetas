@@ -5,7 +5,12 @@ function Header() {
   const { filterByName,
     numberFilter,
     setFilterValue,
-    params } = useContext(PlanetsContext);
+    params,
+    columnParam } = useContext(PlanetsContext);
+
+  const renderColumns = () => columnParam.map((e) => (
+    <option key={ e } value={ e }>{ e }</option>
+  ));
 
   return (
     <div>
@@ -23,11 +28,7 @@ function Header() {
           onChange={ ({ target }) => params(target) }
           value={ numberFilter.column }
         >
-          <option value="orbital_period">orbital_period</option>
-          <option value="population">population</option>
-          <option value="diameter">diameter</option>
-          <option value="rotation_period">rotation_period</option>
-          <option value="surface_water">surface_water</option>
+          { renderColumns() }
         </select>
         <select
           name="comparison"

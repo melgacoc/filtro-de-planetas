@@ -13,6 +13,8 @@ function PlanetsProvider({ children }) {
     value: 0,
   });
   const [moreFilters, setMoreFilters] = useState([]);
+  const [columnParam, setColumnParam] = useState(['orbital_period', 'population',
+    'diameter', 'rotation_period', 'surface_water']);
 
   console.log(filter);
 
@@ -40,6 +42,8 @@ function PlanetsProvider({ children }) {
 
   const setFilterValue = () => {
     setMoreFilters((prevMoreFilters) => [...prevMoreFilters, numberFilter]);
+    const attColumnParam = columnParam.filter((e) => e !== numberFilter.column);
+    setColumnParam(attColumnParam);
   };
 
   useEffect(() => {
@@ -70,7 +74,8 @@ function PlanetsProvider({ children }) {
     filter,
     numberFilter,
     params,
-    setFilterValue };
+    setFilterValue,
+    columnParam };
 
   return (
     <PlanetsContext.Provider value={ contextValue }>
