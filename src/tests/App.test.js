@@ -26,6 +26,14 @@ describe('App', () => {
     expect(screen.getByText('Tatooine')).toBeInTheDocument();
   });
 
+  test('', async () => {
+    const input = screen.findByTestId('name-filter');
+    userEvent.type(input, 't');
+    expect(screen.findByText('Tatooine')).toBeInTheDocument();
+    expect(screen.findByText('Hoth')).toBeInTheDocument();
+    expect(screen.findByText('Coruscant')).toBeInTheDocument();
+  });
+
   test('Testa os filtros numericos', async () => {
     const firstColumn = screen.getByTestId('column-filter');
     expect(firstColumn).toHaveValue('population');
@@ -44,6 +52,18 @@ describe('App', () => {
     const removeALlFilters = screen.getByTestId('button-remove-filters');
     userEvent.click(removeALlFilters);
     expect(firstColumn).toHaveValue('diameter');
+  });
+
+  test('', async () => {
+    const firstColumn = screen.getByTestId('column-filter');
+    expect(firstColumn).toHaveValue('population');
+    const filterButton = screen.getByTestId('button-filter');
+    userEvent.click(filterButton);
+    expect(firstColumn).toHaveValue('orbital_period');
+
+    const removeButton = screen.getByText(/Remover Filtro/i);
+    userEvent.click(removeButton);
+    expect(firstColumn).toHaveValue('population');
   });
 });
 

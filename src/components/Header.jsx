@@ -40,7 +40,7 @@ function Header() {
           type="button"
           onClick={ () => removeFilter(column) }
         >
-          X
+          Remover Filtro
         </button>
       </div>
     );
