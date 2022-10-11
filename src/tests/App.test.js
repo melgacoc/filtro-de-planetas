@@ -26,22 +26,28 @@ describe('App', () => {
     expect(screen.getByText('Tatooine')).toBeInTheDocument();
   });
 
-  test('', async () => {
+  test('Testa o input de nome', async () => {
     const input = screen.findByTestId('name-filter');
     userEvent.type(input, 't');
-    expect(screen.findByText('Tatooine')).toBeInTheDocument();
-    expect(screen.findByText('Hoth')).toBeInTheDocument();
-    expect(screen.findByText('Coruscant')).toBeInTheDocument();
+    expect(screen.findByText('Tatooine')).toBeTruthy();
+    expect(screen.findByText('Hoth')).toBeTruthy();
+    expect(screen.findByText('Coruscant')).toBeTruthy();
+
   });
 
   test('Testa os filtros numericos', async () => {
     const firstColumn = screen.getByTestId('column-filter');
     expect(firstColumn).toHaveValue('population');
+    const firstComparison = screen.getByTestId('comparison-filter');
+    userEvent.selectOptions(firstComparison, 'maior que');
     const filterButton = screen.getByTestId('button-filter');
     userEvent.click(filterButton);
 
     expect(firstColumn).toHaveValue('orbital_period');
     userEvent.selectOptions(firstColumn, 'diameter');
+    userEvent.selectOptions(firstComparison, 'menor que');
+    const firstValue = screen.getByTestId('value-filter');
+    userEvent.type(firstValue, '20000');
     userEvent.click(filterButton);
     expect(firstColumn).toHaveValue('diameter');
 
@@ -54,7 +60,7 @@ describe('App', () => {
     expect(firstColumn).toHaveValue('diameter');
   });
 
-  test('', async () => {
+  test('Testa o botão de remover filtros', async () => {
     const firstColumn = screen.getByTestId('column-filter');
     expect(firstColumn).toHaveValue('population');
     const filterButton = screen.getByTestId('button-filter');
@@ -65,5 +71,30 @@ describe('App', () => {
     userEvent.click(removeButton);
     expect(firstColumn).toHaveValue('population');
   });
-});
 
+  test('Testa o funcionamento de vários filtros', async () => {
+    const column = screen.getByTestId('column-filter');
+    userEvent.selectOptions(column, 'rotation_period');
+    const comparison = screen.getByTestId('comparison-filter');
+    userEvent.selectOptions(comparison, 'menor que');
+    const value = screen.getByTestId('value-filter');
+    userEvent.type(value, '13');
+    userEvent.click(screen.getByTestId('button-filter'));
+
+    expect(screen.findByText('Bespin')).toBeTruthy();
+  });
+
+  it('Testa se o input nome é responivo', async () => {
+    const filtered = mock.results[0];
+    
+    userEvent.type(screen.getByTestId('name-filter'), filtered.name);
+    
+    planets.forEach(({ name }, index) => {
+      if (index === 0) {
+        expect(screen.getByRole('cell', { name })).toBeInTheDocument();
+      } else {
+        expect(screen.queryByRole('cell', { name })).not.toBeInTheDocument();
+      }
+    });
+  });
+});
